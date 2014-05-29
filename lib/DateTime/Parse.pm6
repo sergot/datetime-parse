@@ -1,57 +1,16 @@
-grammar DateTime::Parse;
 
-token TOP {
-    <rfc1123-date> | <rfc850-date> | <asctime-date>
+my class X::DateTime::CannotParse is Exception {
+    has $.invalid-str;
+    method message() { "Unable to parse {$!invalid-str}" }
 }
 
-token rfc1123-date {
-    <wkday> ',' <SP> <date1> <SP> <time> <SP> 'GMT'
-}
+use DateTime::Parse::Grammar;
+use DateTime::Parse::Actions;
 
-token rfc850-date {
-    <weekday> ',' <SP> <date2> <SP> <time> <SP> 'GMT'
-}
-
-token asctime-date {
-    <wkday> <SP> <date3> <SP> <time> <SP> <D4>
-}
-
-token date1 { # e.g., 02 Jun 1982
-    <D2> <SP> <month> <SP> <D4>
-}
-
-token date2 { # e.g., 02-Jun-82
-    <D2> '-' <month> '-' <D2>
-}
-
-token date3 { # e.g., Jun  2
-    <month> <SP> (<D2>? | \d?)
-}
-
-token time {
-    <D2> ':' <D2> ':' <D2>
-}
-
-token wkday {
-    'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun'
-}
-
-token weekday {
-    'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
-}
-
-token month {
-    'Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | 'Oct' | 'Nov' | 'Dev'
-}
-
-token SP {
-    \s+
-}
-
-token D2 {
-    \d ** 2
-}
-
-token D4 {
-    \d ** 4
+class DateTime::Parse is DateTime {
+    multi method new(Str $format, :$timezone is copy = 0, :$rule = 'TOP') {
+        DateTime::Parse::Grammar.parse($format, :$rule, :actions(DateTime::Parse::Actions))
+            or X::DateTime::CannotParse.new( invalid-str => $format ).throw;
+        $/.made
+    }
 }
