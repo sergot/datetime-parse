@@ -18,6 +18,6 @@ Synopsis
 Description
 ==================
 
-- new( $format, $timezone, $rule )
+- new( $format, $rule )
     - $format : String with DateTime to be parsed
     - $rule   : Rule to run
