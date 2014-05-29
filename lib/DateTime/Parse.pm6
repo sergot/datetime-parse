@@ -16,15 +16,15 @@ token asctime-date {
     <wkday> <SP> <date3> <SP> <time> <SP> <D4>
 }
 
-token date1 {
+token date1 { # e.g., 02 Jun 1982
     <D2> <SP> <month> <SP> <D4>
 }
 
-token date2 {
+token date2 { # e.g., 02-Jun-82
     <D2> '-' <month> '-' <D2>
 }
 
-token date3 {
+token date3 { # e.g., Jun  2
     <month> <SP> (<D2>? | \d?)
 }
 
