@@ -29,7 +29,7 @@ token date3 { # e.g., Jun  2
 }
 
 token time {
-    <D2> '-' <D2> '-' <D2>
+    <D2> ':' <D2> ':' <D2>
 }
 
 token wkday {
