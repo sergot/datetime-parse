@@ -1,8 +1,6 @@
 use v6;
 use Test;
 use DateTime::Parse;
-use DateTime::Parse::Grammar;
-use DateTime::Parse::Actions;
 
 plan 6;
 
