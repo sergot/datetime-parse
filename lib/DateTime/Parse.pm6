@@ -141,3 +141,43 @@ class DateTime::Parse is DateTime {
         $/.made
     }
 }
+
+=begin pod
+
+=head1 NAME
+
+DateTime::Parse - DateTime parser
+
+=head1 SYNOPSIS
+
+    use DateTime::Parse;
+    my $date = DateTime::Parse.new('Sun, 06 Nov 1994 08:49:37 GMT');
+    say $date.Date > Date.new('12-12-2014');
+
+=head1 DESCRIPTION
+
+=head2 Available formats:
+
+=item rfc1123
+=item rfc850
+=item asctime 
+
+=head1 METHODS
+
+=head2 method new
+
+    method new(Str $format, :$timezone is copy = 0, :$rule = 'TOP')
+
+A constructor, where:
+
+=item $format is the text we want to parse
+=item $timezone is the timezone we want to get the date in (nyi)
+=item $rule specifies which rule to use, in case we know what format we want to parse (see L<#Available_Formats>)
+
+=head1 AUTHOR
+
+Filip Sergot (sergot)
+Website: filip.sergot.pl
+Contact: filip (at) sergot.pl
+
+=end pod
