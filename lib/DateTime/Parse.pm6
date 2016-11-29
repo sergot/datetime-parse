@@ -1,4 +1,3 @@
-
 my class X::DateTime::CannotParse is Exception {
     has $.invalid-str;
     method message() { "Unable to parse {$!invalid-str}" }
@@ -89,6 +88,10 @@ class DateTime::Parse is DateTime {
         }
 
         method rfc850-date($/) {
+            make DateTime.new(|$<date>.made, |$<time>.made)
+        }
+
+        method rfc850-var-date($/) {
             make DateTime.new(|$<date>.made, |$<time>.made)
         }
 
