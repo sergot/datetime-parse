@@ -26,9 +26,6 @@ class DateTime::Parse is DateTime {
         }
 
         token time-secfrac {
-            # The RFC is ambiguous here: it uses `"." 1*DIGIT` in grammar
-            # but the first example has two digits in this place.
-            # CL implementation uses from 1 to 3 characters here, so are we.
             '.' \d ** 1..3
         }
 
