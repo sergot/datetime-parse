@@ -62,7 +62,7 @@ class DateTime::Parse is DateTime {
         }
 
         token date3 { # e.g., Jun  2
-            <month> <.SP> (<day=.D2> | <.SP> <day=.D1>)
+            <month> <.SP> <day>
         }
 
         token date4 { # e.g., 02-Jun-1982 
@@ -71,6 +71,10 @@ class DateTime::Parse is DateTime {
 
         token time {
             <hour=.D2> ':' <minute=.D2> ':' <second=.D2>
+        }
+
+        token day {
+            <.D1> | <.D2>
         }
 
         token wkday {
@@ -94,7 +98,7 @@ class DateTime::Parse is DateTime {
         }
 
         token SP {
-            \s
+            \s+
         }
 
         token D1 {
@@ -128,7 +132,10 @@ class DateTime::Parse is DateTime {
         }
 
         method asctime-date($/) {
-            make DateTime.new(:year($<year>.made), |$<date>.made, |$<time>.made)
+            my $date = $<date>.made;
+            $date<year> = $<year>.made;
+
+            make DateTime.new(|$<date>.made, |$<time>.made)
         }
 
         method !genericDate($/) {
@@ -187,6 +194,10 @@ class DateTime::Parse is DateTime {
                     Jul => 7, Aug => 8, Sep => 9, Oct => 10, Nov => 11, Dec => 12;
         method month($/) {
             make %month{~$/}
+        }
+
+        method day($/) {
+            make +$/
         }
 
         method D4-year($/) {
