@@ -37,6 +37,14 @@ class DateTime::Parse is DateTime {
             <sign=[+-]> <hour=.D2> ':' <minute=.D2>
         }
 
+        token time-houroffset {
+            <sign=[+-]> <hour>
+        }
+
+        token hour {
+            \d \d?
+        }
+
         token rfc1123-date {
             <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> 'GMT'
         }
@@ -50,7 +58,15 @@ class DateTime::Parse is DateTime {
         }
 
         token asctime-date {
-            <.wkday> <.SP> <date=.date3> <.SP> <time> <.SP> <year=.D4-year>
+            <.wkday> <.SP> <date=.date3> <.SP> <time> <.SP> <year=.D4-year> <asctime-tz>?
+        }
+
+        token asctime-tz {
+            <.SP> <asctime-tzname> <time-houroffset>?
+        }
+
+        token asctime-tzname {
+            \w+
         }
 
         token date1 { # e.g., 02 Jun 1982
@@ -135,7 +151,9 @@ class DateTime::Parse is DateTime {
             my $date = $<date>.made;
             $date<year> = $<year>.made;
 
-            make DateTime.new(|$<date>.made, |$<time>.made)
+            my $tz = ($<asctime-tz>.made<offset-hours> // 0) × 3600;
+
+            make DateTime.new(|$<date>.made, |$<time>.made, :timezone($tz))
         }
 
         method !genericDate($/) {
@@ -160,6 +178,25 @@ class DateTime::Parse is DateTime {
 
         method date5($/) { # e.g. 1996-12-19
             self!genericDate($/);
+        }
+
+        my %timezones =
+            UTC => 0,
+            GMT => 0,
+        ;
+
+        method asctime-tz($/) {
+            my $offset = (%timezones{$<asctime-tzname>.made} // 0) + ($<time-houroffset>.made // 0);
+
+            make { offset-hours => $offset }
+        }
+
+        method asctime-tzname($/) {
+            make ~$/
+        }
+
+        method time-houroffset($/) {
+            make +$/
         }
 
         method time($/) {
