@@ -260,3 +260,5 @@ Website: filip.sergot.pl
 Contact: filip (at) sergot.pl
 
 =end pod
+
+# vim: et sw=4 ts=4
