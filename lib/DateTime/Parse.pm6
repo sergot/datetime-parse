@@ -161,7 +161,7 @@ class DateTime::Parse is DateTime {
 
         method time2($/) {
             my $p = $<part>;
-            my $offset;
+            my $offset = 0;
             unless $<offset> eq 'Z'|'z' {
                 if ~$<offset><offset><sign> eq '-' {
                     $offset = 3600 * ~$<offset><offset><hour>.Int;
