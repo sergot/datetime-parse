@@ -10,7 +10,7 @@ class DateTime::Parse is DateTime {
         }
 
         token rfc3339-date {
-            <date=.date5> 'T' <time=.time2>
+            <date=.date5> <[Tt \x0020]> <time=.time2>
         }
 
         token date5 {
@@ -30,7 +30,7 @@ class DateTime::Parse is DateTime {
         }
 
         token time-offset {
-            [ 'Z' | <offset=.time-numoffset>]
+            [ 'Z' | 'z' | <offset=.time-numoffset>]
         }
 
         token time-numoffset {
@@ -205,8 +205,8 @@ class DateTime::Parse is DateTime {
 
         method time2($/) {
             my $p = $<part>;
-            my $offset;
-            unless $<offset> eq 'Z' {
+            my $offset = 0;
+            unless $<offset> eq 'Z'|'z' {
                 if ~$<offset><offset><sign> eq '-' {
                     $offset = 3600 * ~$<offset><offset><hour>.Int;
                     $offset += 60 * ~$<offset><offset><minute>.Int;
