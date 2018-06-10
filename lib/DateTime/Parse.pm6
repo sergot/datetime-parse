@@ -50,7 +50,7 @@ class DateTime::Parse is DateTime {
         }
 
         token rfc1123-date {
-            <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> <utcGmt>
+            <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> <gmtUtc>
         }
 
         token rfc850-date {
