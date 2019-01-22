@@ -6,7 +6,7 @@ my class X::DateTime::CannotParse is Exception {
 class DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=asctime-date>
+            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date>
         }
 
         token rfc3339-date {
@@ -44,7 +44,7 @@ class DateTime::Parse is DateTime {
         token hour {
             \d \d?
         }
-        
+
         token gmtUtc {
           'GMT' | 'UTC'
         }
@@ -59,6 +59,10 @@ class DateTime::Parse is DateTime {
 
         token rfc850-var-date {
             <.wkday> ','? <.SP> <date=.date4> <.SP> <time> <.SP> <gmtUtc>
+        }
+
+        token rfc850-var-date-two {
+            <.wkday> ','? <.SP> <date=.date2> <.SP> <time> <.SP> <gmtUtc>
         }
 
         token asctime-date {
@@ -85,7 +89,7 @@ class DateTime::Parse is DateTime {
             <month> <.SP> <day>
         }
 
-        token date4 { # e.g., 02-Jun-1982 
+        token date4 { # e.g., 02-Jun-1982
             <day=.D2> '-' <month> '-' <year=.D4-year>
         }
 
@@ -148,6 +152,10 @@ class DateTime::Parse is DateTime {
         }
 
         method rfc850-var-date($/) {
+            make DateTime.new(|$<date>.made, |$<time>.made)
+        }
+
+        method rfc850-var-date-two($/) {
             make DateTime.new(|$<date>.made, |$<time>.made)
         }
 

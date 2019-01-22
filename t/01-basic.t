@@ -24,9 +24,13 @@ ok DateTime::Parse::Grammar.parse($rfc1123)<rfc1123-date>, "'Sun, 06 Nov 1994 08
 throws-like qq[ DateTime::Parse.new('$bad') ], X::DateTime::CannotParse, invalid-str => $bad;
 ok DateTime::Parse::Grammar.parse($rfc850)<rfc850-date>, "'$rfc850' is recognized as rfc850-date";
 nok DateTime::Parse::Grammar.parse($rfc850v)<rfc850-date>, "'$rfc850v' is NOT recognized as rfc850-date";
-ok DateTime::Parse::Grammar.parse($rfc850v)<rfc850-var-date>, "'$rfc850v' is recognized as rfc850-var-date";
+nok DateTime::Parse::Grammar.parse($rfc850vb)<rfc850-date>, "'$rfc850vb' is NOT recognized as rfc850-date";
 nok DateTime::Parse::Grammar.parse($rfc850)<rfc850-var-date>, "'$rfc850' is NOT recognized as rfc850-var-date";
+ok DateTime::Parse::Grammar.parse($rfc850v)<rfc850-var-date>, "'$rfc850v' is recognized as rfc850-var-date";
 nok DateTime::Parse::Grammar.parse($rfc850vb)<rfc850-var-date>, "'$rfc850vb' is NOT recognized as rfc850-var-date";
+nok DateTime::Parse::Grammar.parse($rfc850)<rfc850-var-date-two>, "'$rfc850' is NOT recognized as rfc850-var-date-two";
+nok DateTime::Parse::Grammar.parse($rfc850v)<rfc850-var-date-two>, "'$rfc850v' is NOT recognized as rfc850-var-date-two";
+ok DateTime::Parse::Grammar.parse($rfc850vb)<rfc850-var-date-two>, "'$rfc850vb' is recognized as rfc850-var-date-two";
 ok DateTime::Parse::Grammar.parse($rfc3339_1)<rfc3339-date>, "'$rfc3339_1' is recognized as rfc3339-date";
 ok DateTime::Parse::Grammar.parse($rfc3339_2)<rfc3339-date>, "'$rfc3339_2' is recognized as rfc3339-date";
 
