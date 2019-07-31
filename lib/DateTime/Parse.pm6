@@ -26,7 +26,7 @@ class DateTime::Parse is DateTime {
         }
 
         token time-secfrac {
-            '.' \d ** 1..3
+            '.' \d+
         }
 
         token time-offset {
