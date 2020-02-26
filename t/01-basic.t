@@ -44,4 +44,7 @@ subtest {
     ok DateTime::Parse::Grammar.parse("1994-11-06t08:49:37z")<rfc3339-date>;
 }, 'RFC 3339 formatted time is case-insensitive';
 
+# -0000 for UTC
+ok DateTime::Parse::Grammar.parse('Wed, 26 Feb 2020 21:38:40 -0000')<rfc1123-date>, 'numeric gmt value';
+
 done-testing;
