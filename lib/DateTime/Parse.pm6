@@ -6,7 +6,13 @@ my class X::DateTime::CannotParse is Exception {
 class DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date>
+            | <dt=rfc3339-date>
+            | <dt=rfc1123-date>
+            | <dt=rfc2822-date>
+            | <dt=rfc850-date>
+            | <dt=rfc850-var-date>
+            | <dt=rfc850-var-date-two>
+            | <dt=asctime-date>
         }
 
         token rfc3339-date {
@@ -21,6 +27,10 @@ class DateTime::Parse is DateTime {
             <part=.partial-time> <offset=.time-offset>
         }
 
+        token time3 {
+            <part=.time> <.SP> <offset=.time-offset2>
+        }
+
         token partial-time {
             <hour=.D2> ':' <minute=.D2> ':' <second=.D2> <frac=.time-secfrac>?
         }
@@ -31,6 +41,10 @@ class DateTime::Parse is DateTime {
 
         token time-offset {
             [ 'Z' | 'z' | <offset=.time-numoffset>]
+        }
+
+        token time-offset2 {
+            <sign=[+-]> <hour=.D2> <minute=.D2>
         }
 
         token time-numoffset {
@@ -51,6 +65,10 @@ class DateTime::Parse is DateTime {
 
         token rfc1123-date {
             <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> <gmtUtc>
+        }
+
+        token rfc2822-date {
+            <.wkday> ',' <.SP> <date=.date6> <.SP> <time=.time3>
         }
 
         token rfc850-date {
@@ -91,6 +109,10 @@ class DateTime::Parse is DateTime {
 
         token date4 { # e.g., 02-Jun-1982
             <day=.D2> '-' <month> '-' <year=.D4-year>
+        }
+
+        token date6 { # e.g., 02 Jun 1982 or 2 Jun 1982
+            <day> <.SP> <month> <.SP> <year=.D4-year>
         }
 
         token time {
@@ -147,6 +169,10 @@ class DateTime::Parse is DateTime {
             make DateTime.new(|$<date>.made, |$<time>.made)
         }
 
+        method rfc2822-date($/) {
+            make DateTime.new(|$<date>.made, |$<time>.made)
+        }
+
         method rfc850-date($/) {
             make DateTime.new(|$<date>.made, |$<time>.made)
         }
@@ -192,6 +218,10 @@ class DateTime::Parse is DateTime {
             self!genericDate($/);
         }
 
+        method date6($/) { # e.g. 1996-12-19
+            self!genericDate($/);
+        }
+
         my %timezones =
             UTC => 0,
             GMT => 0,
@@ -228,6 +258,16 @@ class DateTime::Parse is DateTime {
             make %res;
         }
 
+        method time3($/) {
+            my $p = $<part>;
+            my $offset = 0;
+            if ~$<offset><sign> eq '-' {
+                $offset = 3600 * ~$<offset><hour>.Int;
+                $offset += 60 * ~$<offset><minute>.Int;
+            }
+            my %res = hour => ~$p<hour>, minute => ~$p<minute>, second => ~$p<second>, timezone => -$offset;
+            make %res;
+        }
         my %wkday = Mon => 0, Tue => 1, Wed => 2, Thu => 3, Fri => 4, Sat => 5, Sun => 6;
         method wkday($/) {
             make %wkday{~$/}
@@ -287,6 +327,7 @@ DateTime::Parse - DateTime parser
 =head2 Available formats:
 
 =item rfc1123
+=item rfc2822
 =item rfc850
 =item asctime 
 
