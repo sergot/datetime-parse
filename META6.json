@@ -1,15 +1,22 @@
 {
-    "perl"      : "6.*",
-    "name"      : "DateTime::Parse",
-    "version"   : "0.9.1",
-    "description"   : "DateTime parser",
-    "build-depends" : [ ],
-    "test-depends" : [
+    "author": "Filip Sergot",
+    "description": "DateTime parser",
+    "build-depends": [
+    ],
+    "depends": [
+    ],
+    "name": "DateTime::Parse",
+    "perl": "6.*",
+    "provides": {
+        "DateTime::Parse": "lib/DateTime/Parse.rakumod"
+    },
+    "source-url": "git://github.com/sergot/datetime-parse.git",
+    "support": {
+        "bugtracker": "https://github.com/sergot/datetime-parse/issues",
+        "source": "git://github.com/sergot/datetime-parse.git"
+    },
+    "test-depends": [
         "Test"
     ],
-    "depends" : [ ],
-    "provides" : {
-        "DateTime::Parse" : "lib/DateTime/Parse.pm6"
-    },
-    "source-url"    : "git://github.com/sergot/datetime-parse.git"
+    "version": "0.9.1"
 }
