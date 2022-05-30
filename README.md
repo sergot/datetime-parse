@@ -3,6 +3,8 @@ DateTime::Parse
 
 DateTime parser.
 
+[![test](https://github.com/sergot/datetime-parse/actions/workflows/test.yml/badge.svg)](https://github.com/sergot/datetime-parse/actions/workflows/test.yml)
+
 
 Synopsis
 ===================
