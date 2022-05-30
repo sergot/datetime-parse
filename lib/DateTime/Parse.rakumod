@@ -50,7 +50,7 @@ class DateTime::Parse is DateTime {
         }
 
         token gmtUtc {
-          'GMT' | 'UTC'
+          'GMT' | 'UTC' | [ <[-+]>? '0000' ]
         }
 
         token rfc1123-date {
