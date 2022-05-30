@@ -6,19 +6,23 @@ my class X::DateTime::CannotParse is Exception {
 class DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date>
+            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=asctime-date> | <dt=nginx-date>
         }
 
         token rfc3339-date {
             <date=.date5> <[Tt \x0020]> <time=.time2>
         }
 
-        token date5 {
-            <year=.D4-year>  '-' <month=.D2> '-' <day=.D2>
+        token nginx-date {
+            <date=.date6> ':' <time=.time3>
         }
 
         token time2 {
             <part=.partial-time> <offset=.time-offset>
+        }
+
+        token time3 {
+            <time=.partial-time> ' ' <time-numoffset>
         }
 
         token partial-time {
@@ -34,7 +38,7 @@ class DateTime::Parse is DateTime {
         }
 
         token time-numoffset {
-            <sign=[+-]> <hour=.D2> ':' <minute=.D2>
+            <sign=[+-]> <hour=.D2> ':'? <minute=.D2>
         }
 
         token time-houroffset {
@@ -91,6 +95,14 @@ class DateTime::Parse is DateTime {
 
         token date4 { # e.g., 02-Jun-1982
             <day=.D2> '-' <month> '-' <year=.D4-year>
+        }
+
+        token date5 {
+            <year=.D4-year>  '-' <month=.D2> '-' <day=.D2>
+        }
+
+        token date6 {
+            <day=.D2> '/' <month> '/' <year=.D4-year>
         }
 
         token time {
@@ -168,6 +180,10 @@ class DateTime::Parse is DateTime {
             make DateTime.new(|$<date>.made, |$<time>.made, :timezone($tz))
         }
 
+        method nginx-date($/) {
+            make DateTime.new(|$<date>.made, |$<time>.made);
+        }
+
         method !genericDate($/) {
             make { year => $<year>.made, month => $<month>.made, day => $<day>.made }
         }
@@ -189,6 +205,10 @@ class DateTime::Parse is DateTime {
         }
 
         method date5($/) { # e.g. 1996-12-19
+            self!genericDate($/);
+        }
+
+        method date6($/) { # e.g. 28/Mar/2018
             self!genericDate($/);
         }
 
@@ -226,6 +246,20 @@ class DateTime::Parse is DateTime {
             }
             my %res = hour => ~$p<hour>, minute => ~$p<minute>, second => ~$p<second>, timezone => -$offset;
             make %res;
+        }
+
+        method time3($/) {
+            my Int $offset = 0;
+
+            $offset += +$<time-numoffset><hour> × 60;
+            $offset += +$<time-numoffset><minute>;
+
+            make {
+                hour     => +$<time><hour>,
+                minute   => +$<time><minute>,
+                second   => +$<time><second>,
+                timezone => $offset,
+            };
         }
 
         my %wkday = Mon => 0, Tue => 1, Wed => 2, Thu => 3, Fri => 4, Sat => 5, Sun => 6;
