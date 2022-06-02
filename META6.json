@@ -1,5 +1,8 @@
 {
-    "author": "Filip Sergot",
+    "auth": "github:sergot",
+    "authors": [
+        "Filip Sergot"
+    ],
     "description": "DateTime parser",
     "build-depends": [
     ],
@@ -10,6 +13,7 @@
     "provides": {
         "DateTime::Parse": "lib/DateTime/Parse.rakumod"
     },
+    "raku": "6.*",
     "source-url": "git://github.com/sergot/datetime-parse.git",
     "support": {
         "bugtracker": "https://github.com/sergot/datetime-parse/issues",
