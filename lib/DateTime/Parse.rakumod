@@ -49,24 +49,24 @@ class DateTime::Parse is DateTime {
             \d \d?
         }
 
-        token gmtUtc {
-          'GMT' | 'UTC' | [ <[-+]>? '0000' ]
+        token gmt-or-numeric-tz {
+          'GMT' | 'UTC' | [ <[-+]>? <[0..9]> ** 4 ]
         }
 
         token rfc1123-date {
-            <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> <gmtUtc>
+            <.wkday> ',' <.SP> <date=.date1> <.SP> <time> <.SP> <gmt-or-numeric-tz>
         }
 
         token rfc850-date {
-            <.weekday> ',' <.SP> <date=.date2> <.SP> <time> <.SP> <gmtUtc>
+            <.weekday> ',' <.SP> <date=.date2> <.SP> <time> <.SP> <gmt-or-numeric-tz>
         }
 
         token rfc850-var-date {
-            <.wkday> ','? <.SP> <date=.date4> <.SP> <time> <.SP> <gmtUtc>
+            <.wkday> ','? <.SP> <date=.date4> <.SP> <time> <.SP> <gmt-or-numeric-tz>
         }
 
         token rfc850-var-date-two {
-            <.wkday> ','? <.SP> <date=.date2> <.SP> <time> <.SP> <gmtUtc>
+            <.wkday> ','? <.SP> <date=.date2> <.SP> <time> <.SP> <gmt-or-numeric-tz>
         }
 
         token asctime-date {
@@ -156,19 +156,25 @@ class DateTime::Parse is DateTime {
         }
 
         method rfc1123-date($/) {
-            make DateTime.new(|$<date>.made, |$<time>.made)
+            make DateTime.new(|$<date>.made, |$<time>.made, |$<gmt-or-numeric-tz>.made)
         }
 
         method rfc850-date($/) {
-            make DateTime.new(|$<date>.made, |$<time>.made)
+            make DateTime.new(|$<date>.made, |$<time>.made, |$<gmt-or-numeric-tz>.made)
         }
 
         method rfc850-var-date($/) {
-            make DateTime.new(|$<date>.made, |$<time>.made)
+            make DateTime.new(|$<date>.made, |$<time>.made, |$<gmt-or-numeric-tz>.made)
+        }
+
+        method gmt-or-numeric-tz($/) {
+            $/.make: %( timezone =>
+                    "$/" eq 'UTC' | 'GMT' | 'Z' ?? 0 !! +$/ * 36
+                );
         }
 
         method rfc850-var-date-two($/) {
-            make DateTime.new(|$<date>.made, |$<time>.made)
+            make DateTime.new(|$<date>.made, |$<time>.made, |$<gmt-or-numeric-tz>.made)
         }
 
         method asctime-date($/) {
