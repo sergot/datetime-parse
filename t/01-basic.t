@@ -46,5 +46,11 @@ subtest {
 
 # -0000 for UTC
 ok DateTime::Parse::Grammar.parse('Wed, 26 Feb 2020 21:38:40 -0000')<rfc1123-date>, 'numeric gmt value';
+# Numeric timezone values
+ok DateTime::Parse::Grammar.parse('Mon, 22 Aug 2016 13:15:39 +0200')<rfc1123-date>, 'numeric gmt value';
+ok DateTime::Parse::Grammar.parse('Mon, 22 Aug 2016 13:15:39 -0500')<rfc1123-date>, 'numeric gmt value';
+is DateTime::Parse.new('Mon, 22 Aug 2016 13:15:39 +0200').timezone, 7200, 'got timezone';
+is DateTime::Parse.new('Mon, 22 Aug 2016 13:15:39 -0200').timezone, -7200, 'got timezone';
+is DateTime::Parse.new('Mon, 22 Aug 2016 13:15:39 +0000').timezone, 0, 'got timezone';
 
 done-testing;
