@@ -6,7 +6,7 @@ my class X::DateTime::CannotParse is Exception {
 class DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date> | <dt=nginx-date>
+            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date> | <dt=nginx-date> | <dt=ls-date>
         }
 
         token rfc3339-date {
@@ -103,6 +103,10 @@ class DateTime::Parse is DateTime {
 
         token date6 {
             <day=.D2> '/' <month> '/' <year=.D4-year>
+        }
+        
+        token ls-date { # "By default, ls linux command prints dates in Mmm dd HH:MM or in Mmm dd YYYY format for recently and non-recently changed files, respectively."
+          <month> <.SP> <day> <.SP> [<hour=.D2> ':' <minute=.D2> | <year=.D4-year>]
         }
 
         token time {
@@ -216,6 +220,19 @@ class DateTime::Parse is DateTime {
 
         method date6($/) { # e.g. 28/Mar/2018
             self!genericDate($/);
+        }
+        
+        method ls-date($/) { # e.g. 28/Mar/2018
+            my $day = $<day>.made;
+            my $month = $<month>.made;
+            with $<year> {
+                make DateTime.new(year => .made, :$month, :$day);
+            } else {
+                my $this-year = Date.today.year;
+                my $recent-time = DateTime.new(year => $this-year, :$month, :$day, hour => +$<hour>, minute => +$<minute>);
+                $recent-time.=earlier(:1year) if DateTime.now < $recent-time;
+                make $recent-time; 
+            }; 
         }
 
         my %timezones =
