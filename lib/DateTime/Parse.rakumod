@@ -84,6 +84,10 @@ class DateTime::Parse is DateTime {
             \w+
         }
 
+        token date {  
+            <date=.date1> | <date=.date2> | <date=.date3> | <date=.date4> | <date=.date5> | <date=.date6> | <date=.date7>
+        }
+
         token date1 { # e.g., 02 Jun 1982
             <day=.D2> <.SP> <month> <.SP> <year=.D4-year>
         }
@@ -207,6 +211,10 @@ class DateTime::Parse is DateTime {
 
         method !genericDate($/) {
             make { year => $<year>.made, month => $<month>.made, day => $<day>.made }
+        }
+
+        method date($/) { 
+            make { year => $<date><year>.made, month => $<date><month>.made, day => $<date><day>.made }
         }
 
         method date1($/) { # e.g., 02 Jun 1982
