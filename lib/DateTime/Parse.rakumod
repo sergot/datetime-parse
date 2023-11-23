@@ -5,7 +5,7 @@ my class X::DateTime::CannotParse is Exception {
 
 #use Grammar::Tracer;
 
-class DateTime::Parse is DateTime {
+role DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
             <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> |
