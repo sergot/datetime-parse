@@ -3,10 +3,13 @@ my class X::DateTime::CannotParse is Exception {
     method message() { "Unable to parse {$!invalid-str}" }
 }
 
-class DateTime::Parse is DateTime {
+#use Grammar::Tracer;
+
+role DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date> | <dt=nginx-date>
+            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> |
+            <dt=asctime-date> | <dt=nginx-date>
         }
 
         token rfc3339-date {
@@ -81,6 +84,10 @@ class DateTime::Parse is DateTime {
             \w+
         }
 
+        token date {  
+            <date=.date1> | <date=.date2> | <date=.date3> | <date=.date4> | <date=.date5> | <date=.date6> | <date=.date7>
+        }
+
         token date1 { # e.g., 02 Jun 1982
             <day=.D2> <.SP> <month> <.SP> <year=.D4-year>
         }
@@ -105,6 +112,10 @@ class DateTime::Parse is DateTime {
             <day=.D2> '/' <month> '/' <year=.D4-year>
         }
 
+        token date7 {
+            <day> <.TH> <.SP> <month=month-long> <.SP> <year=.D4-year>
+        }
+
         token time {
             <hour=.D2> ':' <minute=.D2> ':' <second=.D2>
         }
@@ -125,6 +136,10 @@ class DateTime::Parse is DateTime {
             'Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun' | 'Jul' | 'Aug' | 'Sep' | 'Oct' | 'Nov' | 'Dec'
         }
 
+        token month-long {
+            <month> \w* 
+        }
+
         token D4-year {
             \d ** 4
         }
@@ -143,6 +158,10 @@ class DateTime::Parse is DateTime {
 
         token D2 {
             \d ** 2
+        }
+
+        token TH {
+            'st' | 'nd' | 'rd' | 'th'
         }
     }
 
@@ -194,6 +213,10 @@ class DateTime::Parse is DateTime {
             make { year => $<year>.made, month => $<month>.made, day => $<day>.made }
         }
 
+        method date($/) { 
+            make { year => $<date><year>.made, month => $<date><month>.made, day => $<date><day>.made }
+        }
+
         method date1($/) { # e.g., 02 Jun 1982
             self!genericDate($/);
         }
@@ -215,6 +238,10 @@ class DateTime::Parse is DateTime {
         }
 
         method date6($/) { # e.g. 28/Mar/2018
+            self!genericDate($/);
+        }
+
+        method date7($/) { # e.g. 28th Mar 2023
             self!genericDate($/);
         }
 
@@ -283,6 +310,10 @@ class DateTime::Parse is DateTime {
                     Jul => 7, Aug => 8, Sep => 9, Oct => 10, Nov => 11, Dec => 12;
         method month($/) {
             make %month{~$/}
+        }
+
+        method month-long($/) {
+            make %month{~$/<month>}
         }
 
         method day($/) {

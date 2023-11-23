@@ -15,6 +15,10 @@ my $rfc3339_2 = '1996-12-19T16:39:57-08:00';
 is DateTime::Parse.new('Sun', :rule<wkday>), 6, "'Sun' is day 6 in rule wkday";
 is DateTime::Parse.new('06 Nov 1994', :rule<date1>).sort,
    {"day" => 6, "month" => 11, "year" => 1994}.sort, "we parse '06 Nov 1994' as rule date1";
+is DateTime::Parse.new('20th September 2023', :rule<date7>).sort,
+   {"day" => 20, "month" => 9, "year" => 2023}.sort, "we parse '20th September 2023' as rule date7";
+is DateTime::Parse.new('20th September 2023', :rule<date>).sort,
+   {"day" => 20, "month" => 9, "year" => 2023}.sort, "we parse '20th September 2023' as rule date";
 is DateTime::Parse.new('08:49:37', :rule<time>).sort,
    {"hour" => 8, "minute" => 49, "second" => 37}.sort, "we parse '08:49:37' as rule time";
 is DateTime::Parse.new($rfc1123),
