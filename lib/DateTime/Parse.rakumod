@@ -6,11 +6,16 @@ my class X::DateTime::CannotParse is Exception {
 class DateTime::Parse is DateTime {
     grammar DateTime::Parse::Grammar {
         token TOP {
-            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date> | <dt=nginx-date>
+            <dt=rfc3339-date> | <dt=rfc1123-date> | <dt=rfc850-date> | <dt=rfc850-var-date> | <dt=rfc850-var-date-two> | <dt=asctime-date> | <dt=nginx-date> |
+	    <dt=yyyy-mm-dd>
         }
 
         token rfc3339-date {
             <date=.date5> <[Tt \x0020]> <time=.time2>
+        }
+
+        token yyyy-mm-dd {
+          <year=.D4-year> '-' <month=.D2> '-' <day=.D2>
         }
 
         token nginx-date {
@@ -217,6 +222,10 @@ class DateTime::Parse is DateTime {
         method date6($/) { # e.g. 28/Mar/2018
             self!genericDate($/);
         }
+	
+	method yyyy-mm-dd ($/) {
+	    make DateTime.new( |self!genericDate($/) );
+	}
 
         my %timezones =
             UTC => 0,
